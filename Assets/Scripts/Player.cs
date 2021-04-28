@@ -141,6 +141,7 @@ public class Player : MonoBehaviour
     public void DestroyPlayer()
     {
         _gameManager.GameOver(true);
+        _uiManager.UpdateLives(_currentLives = 0);
         GameObject explosion = Instantiate(_explosionPrefab, transform.position, Quaternion.identity);
         _playerSpeed = 0;
         Destroy(gameObject, 0.25f);
