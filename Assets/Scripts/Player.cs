@@ -12,9 +12,11 @@ public class Player : MonoBehaviour
     [SerializeField] float _speedPowerUpDuration = 7f;
     GameManager _gameManager;
     Transform _laserContainer;
+    GameObject _shields;
     float _canFire = -1f;
     int _currentLives;
     bool _isTripleShotActive;
+    bool _isShieldsActive;
 
     void Start()
     {
@@ -28,6 +30,11 @@ public class Player : MonoBehaviour
         _gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         if (_gameManager == null)
             Debug.LogError("Game Manager is NULL!");
+
+        _shields = GameObject.Find("ShieldsEffect");
+        if (_shields == null)
+            Debug.LogError("Shields not found!");
+        _shields.SetActive(false);
     }
 
     void Update()
@@ -61,7 +68,16 @@ public class Player : MonoBehaviour
 
     public void Damage()
     {
+        if (_isShieldsActive)
+        {
+            _isShieldsActive = false;
+            _shields.SetActive(false);
+
+            return;
+        }
+
         _currentLives--;
+
         if (_currentLives < 1)
         {
             _gameManager.GameOver(true);
@@ -91,5 +107,11 @@ public class Player : MonoBehaviour
     {
         yield return new WaitForSeconds(_speedPowerUpDuration);
         _playerSpeed /= 1.5f;
+    }
+
+    public void ActivateShields()
+    {
+        _isShieldsActive = true;
+        _shields.SetActive(true);
     }
 }
