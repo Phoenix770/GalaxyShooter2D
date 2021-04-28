@@ -5,7 +5,7 @@ public class SpawnManager : MonoBehaviour
 {
     [SerializeField] GameObject _enemyPrefab;
     [SerializeField] GameObject _enemyContainer;
-    [SerializeField] GameObject _tripleShotPrefab;
+    [SerializeField] GameObject[] _powerUpPrefab;
     bool _isGameOver = false;
     void Start()
     {
@@ -29,7 +29,8 @@ public class SpawnManager : MonoBehaviour
         while (!GameManager.Instance.IsGameOver())
         {
             Vector3 spawnPosition = new Vector3(Random.Range(-10f, 10f), 7f, 0);
-            Instantiate(_tripleShotPrefab, spawnPosition, Quaternion.identity);
+            int powerUpToSpawn = Random.Range(0, 2);
+            Instantiate(_powerUpPrefab[powerUpToSpawn], spawnPosition, Quaternion.identity);
             yield return new WaitForSeconds(Random.Range(6f, 11f));
         }
     }

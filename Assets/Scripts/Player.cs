@@ -9,6 +9,7 @@ public class Player : MonoBehaviour
     [SerializeField] int _maximumLives = 3;
     [SerializeField] float _tripleShotDuration = 5f;
     [SerializeField] GameObject _tripleShotPrefab;
+    [SerializeField] float _speedPowerUpDuration = 7f;
     GameManager _gameManager;
     Transform _laserContainer;
     float _canFire = -1f;
@@ -78,5 +79,17 @@ public class Player : MonoBehaviour
     {
         yield return new WaitForSeconds(_tripleShotDuration);
         _isTripleShotActive = false;
+    }
+
+    public void ActivateSpeed()
+    {
+        _playerSpeed *= 1.5f;
+        StartCoroutine(SpeedPowerDownRoutine());
+    }
+
+    IEnumerator SpeedPowerDownRoutine()
+    {
+        yield return new WaitForSeconds(_speedPowerUpDuration);
+        _playerSpeed /= 1.5f;
     }
 }
