@@ -33,8 +33,7 @@ public class Enemy : MonoBehaviour
             Destroy(collision.gameObject);
             DestroyEnemy();
         }
-
-        if (collision.tag == "Player")
+        else if (collision.tag == "Player")
         {
             Player player = collision.GetComponent<Player>();
             if (player == null)

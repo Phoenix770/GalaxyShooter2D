@@ -10,6 +10,10 @@ public class Player : MonoBehaviour
     [SerializeField] float _tripleShotDuration = 5f;
     [SerializeField] GameObject _tripleShotPrefab;
     [SerializeField] float _speedPowerUpDuration = 7f;
+    [SerializeField] GameObject _rightEngine;
+    [SerializeField] GameObject _leftEngine;
+    [SerializeField] GameObject _explosionPrefab;
+
     GameManager _gameManager;
     Transform _laserContainer;
     GameObject _shields;
@@ -24,6 +28,8 @@ public class Player : MonoBehaviour
     {
         transform.position = new Vector3(0, -4f, 0);
         _currentLives = _maximumLives;
+        _rightEngine.gameObject.SetActive(false);
+        _leftEngine.gameObject.SetActive(false);
 
         _laserContainer = GameObject.Find("LaserContainer").GetComponent<Transform>();
         if (_laserContainer == null)
@@ -85,10 +91,14 @@ public class Player : MonoBehaviour
         _currentLives--;
         _uiManager.UpdateLives(_currentLives);
 
+        if (_currentLives == 2)
+            _rightEngine.gameObject.SetActive(true);
+        else if (_currentLives == 1)
+            _leftEngine.gameObject.SetActive(true);
+
         if (_currentLives < 1)
         {
-            _gameManager.GameOver(true);
-            Destroy(gameObject);
+            DestroyPlayer();
         }
     }
 
@@ -127,4 +137,14 @@ public class Player : MonoBehaviour
         _score += scoreAmount;
         _uiManager.UpdateScore(_score);
     }
+
+    public void DestroyPlayer()
+    {
+        _gameManager.GameOver(true);
+        GameObject explosion = Instantiate(_explosionPrefab, transform.position, Quaternion.identity);
+        _playerSpeed = 0;
+        Destroy(gameObject, 0.25f);
+        Destroy(explosion, 3f);
+    }
+
 }

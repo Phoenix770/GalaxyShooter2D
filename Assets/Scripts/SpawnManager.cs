@@ -7,14 +7,10 @@ public class SpawnManager : MonoBehaviour
     [SerializeField] GameObject _enemyContainer;
     [SerializeField] GameObject[] _powerUpPrefab;
     bool _isGameOver = false;
-    void Start()
-    {
-        StartCoroutine(SpawnEnemyRoutine());
-        StartCoroutine(SpawnPowerUpsRoutine());
-    }
 
     IEnumerator SpawnEnemyRoutine()
     {
+        yield return new WaitForSeconds(1f);
         while (!GameManager.Instance.IsGameOver())
         {
             Vector3 spawnPosition = new Vector3(Random.Range(-9f, 9f), 7f, 0);
@@ -26,6 +22,7 @@ public class SpawnManager : MonoBehaviour
 
     IEnumerator SpawnPowerUpsRoutine()
     {
+        yield return new WaitForSeconds(1f);
         while (!GameManager.Instance.IsGameOver())
         {
             Vector3 spawnPosition = new Vector3(Random.Range(-10f, 10f), 7f, 0);
@@ -33,5 +30,11 @@ public class SpawnManager : MonoBehaviour
             Instantiate(_powerUpPrefab[powerUpToSpawn], spawnPosition, Quaternion.identity);
             yield return new WaitForSeconds(Random.Range(6f, 11f));
         }
+    }
+
+    public void StartSpawning()
+    {
+        StartCoroutine(SpawnEnemyRoutine());
+        StartCoroutine(SpawnPowerUpsRoutine());
     }
 }
