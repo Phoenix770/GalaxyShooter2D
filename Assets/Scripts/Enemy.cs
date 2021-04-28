@@ -3,6 +3,15 @@ using UnityEngine;
 public class Enemy : MonoBehaviour
 {
     [SerializeField] float _speed = 4f;
+    [SerializeField] int _scoreAmount = 10;
+    Player _player;
+
+    private void Start()
+    {
+        _player = GameObject.Find("Player").GetComponent<Player>();
+        if (_player == null)
+            Debug.LogError("Player is NULL!");
+    }
 
     void Update()
     {
@@ -17,15 +26,17 @@ public class Enemy : MonoBehaviour
         if (collision.tag == "Laser")
         {
             Destroy(collision.gameObject);
+            _player.IncreaseScore(_scoreAmount);
             Destroy(gameObject);
         }
 
         if (collision.tag == "Player")
         {
-            Player _player = collision.GetComponent<Player>();
-            if (_player == null)
+            Player player = collision.GetComponent<Player>();
+            if (player == null)
                 return;
-            _player.Damage();
+            player.Damage();
+            player.IncreaseScore(_scoreAmount);
             Destroy(gameObject);
         }
     }

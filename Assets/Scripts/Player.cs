@@ -17,6 +17,8 @@ public class Player : MonoBehaviour
     int _currentLives;
     bool _isTripleShotActive;
     bool _isShieldsActive;
+    int _score = 0;
+    UIManager _uiManager;
 
     void Start()
     {
@@ -35,6 +37,10 @@ public class Player : MonoBehaviour
         if (_shields == null)
             Debug.LogError("Shields not found!");
         _shields.SetActive(false);
+
+        _uiManager = GameObject.Find("Canvas").GetComponent<UIManager>();
+        if (_uiManager == null)
+            Debug.LogError("UI Manager is NULL!");
     }
 
     void Update()
@@ -77,6 +83,7 @@ public class Player : MonoBehaviour
         }
 
         _currentLives--;
+        _uiManager.UpdateLives(_currentLives);
 
         if (_currentLives < 1)
         {
@@ -113,5 +120,11 @@ public class Player : MonoBehaviour
     {
         _isShieldsActive = true;
         _shields.SetActive(true);
+    }
+
+    public void IncreaseScore(int scoreAmount)
+    {
+        _score += scoreAmount;
+        _uiManager.UpdateScore(_score);
     }
 }
