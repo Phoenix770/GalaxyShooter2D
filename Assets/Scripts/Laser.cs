@@ -9,6 +9,11 @@ public class Laser : MonoBehaviour
         transform.Translate(Vector3.up * _speed * Time.deltaTime);
 
         if (transform.position.y > 7f)
-            Destroy(gameObject);
+        {
+            if (transform.parent.name == "TripleLaserShot(Clone)")
+                Destroy(transform.parent.gameObject);
+            else
+                Destroy(gameObject);
+        }
     }
 }

@@ -5,10 +5,12 @@ public class SpawnManager : MonoBehaviour
 {
     [SerializeField] GameObject _enemyPrefab;
     [SerializeField] GameObject _enemyContainer;
+    [SerializeField] GameObject _tripleShotPrefab;
     bool _isGameOver = false;
     void Start()
     {
         StartCoroutine(SpawnEnemyRoutine());
+        StartCoroutine(SpawnPowerUpsRoutine());
     }
 
     IEnumerator SpawnEnemyRoutine()
@@ -19,6 +21,16 @@ public class SpawnManager : MonoBehaviour
             GameObject enemy = Instantiate(_enemyPrefab, spawnPosition, Quaternion.identity);
             enemy.transform.SetParent(_enemyContainer.transform);
             yield return new WaitForSeconds(3f);
+        }
+    }
+
+    IEnumerator SpawnPowerUpsRoutine()
+    {
+        while (!IsGameOver())
+        {
+            Vector3 spawnPosition = new Vector3(Random.Range(-10f, 10f), 7f, 0);
+            Instantiate(_tripleShotPrefab, spawnPosition, Quaternion.identity);
+            yield return new WaitForSeconds(Random.Range(6f, 11f));
         }
     }
 
