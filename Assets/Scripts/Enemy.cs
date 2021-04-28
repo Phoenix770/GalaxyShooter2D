@@ -6,6 +6,7 @@ public class Enemy : MonoBehaviour
     [SerializeField] int _scoreAmount = 10;
     Player _player;
     Animator _anim;
+    AudioSource _audioSource;
 
     private void Start()
     {
@@ -16,6 +17,10 @@ public class Enemy : MonoBehaviour
         _player = GameObject.Find("Player").GetComponent<Player>();
         if (_player == null)
             Debug.LogError("Player is NULL!");
+
+        _audioSource = GetComponent<AudioSource>();
+        if (_audioSource == null)
+            Debug.LogError("AudioSource on Enemy is NULL!");
     }
 
     void Update()
@@ -50,6 +55,7 @@ public class Enemy : MonoBehaviour
         GetComponent<BoxCollider2D>().enabled = false;
         _speed = 0;
         _player.IncreaseScore(_scoreAmount);
+        _audioSource.Play();
         Destroy(gameObject, 2.5f);
     }
 }

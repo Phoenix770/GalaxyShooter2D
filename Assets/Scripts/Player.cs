@@ -13,6 +13,7 @@ public class Player : MonoBehaviour
     [SerializeField] GameObject _rightEngine;
     [SerializeField] GameObject _leftEngine;
     [SerializeField] GameObject _explosionPrefab;
+    [SerializeField] AudioClip _laserSoundClip;
 
     GameManager _gameManager;
     Transform _laserContainer;
@@ -23,6 +24,7 @@ public class Player : MonoBehaviour
     bool _isShieldsActive;
     int _score = 0;
     UIManager _uiManager;
+    AudioSource _audioSource;
 
     void Start()
     {
@@ -47,6 +49,12 @@ public class Player : MonoBehaviour
         _uiManager = GameObject.Find("Canvas").GetComponent<UIManager>();
         if (_uiManager == null)
             Debug.LogError("UI Manager is NULL!");
+
+        _audioSource = GetComponent<AudioSource>();
+        if (_audioSource == null)
+            Debug.LogError("AudioSource on the Player is NULL!");
+        else
+            _audioSource.clip = _laserSoundClip;
     }
 
     void Update()
@@ -76,6 +84,8 @@ public class Player : MonoBehaviour
         else
             laser = Instantiate(_laserPrefab, transform.position + new Vector3(0, 0.8f, 0), Quaternion.identity);
         laser.transform.SetParent(_laserContainer);
+
+        _audioSource.Play();
     }
 
     public void Damage()
@@ -142,10 +152,8 @@ public class Player : MonoBehaviour
     {
         _gameManager.GameOver(true);
         _uiManager.UpdateLives(_currentLives = 0);
-        GameObject explosion = Instantiate(_explosionPrefab, transform.position, Quaternion.identity);
+        Instantiate(_explosionPrefab, transform.position, Quaternion.identity);
         _playerSpeed = 0;
         Destroy(gameObject, 0.25f);
-        Destroy(explosion, 3f);
     }
-
 }

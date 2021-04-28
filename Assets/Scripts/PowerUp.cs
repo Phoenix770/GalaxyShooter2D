@@ -6,6 +6,7 @@ public class PowerUp : MonoBehaviour
 {
     [SerializeField] float _speed = 3f;
     [SerializeField] int _powerUpId;
+    [SerializeField] AudioClip _powerUpClip;
 
     void Update()
     {
@@ -35,6 +36,7 @@ public class PowerUp : MonoBehaviour
                     _player.ActivateShields();
                     break;
             }
+            AudioSource.PlayClipAtPoint(_powerUpClip, transform.position);
 
             Destroy(gameObject);
         }
