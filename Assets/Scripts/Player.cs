@@ -9,7 +9,7 @@ public class Player : MonoBehaviour
     [SerializeField] int _maximumLives = 3;
     [SerializeField] float _tripleShotDuration = 5f;
     [SerializeField] GameObject _tripleShotPrefab;
-    SpawnManager _spawnManager;
+    GameManager _gameManager;
     Transform _laserContainer;
     float _canFire = -1f;
     int _currentLives;
@@ -24,9 +24,9 @@ public class Player : MonoBehaviour
         if (_laserContainer == null)
             Debug.LogError("Laser Container is NULL!");
 
-        _spawnManager = GameObject.Find("SpawnManager").GetComponent<SpawnManager>();
-        if (_spawnManager == null)
-            Debug.LogError("Spawn Manager is NULL!");
+        _gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+        if (_gameManager == null)
+            Debug.LogError("Game Manager is NULL!");
     }
 
     void Update()
@@ -63,7 +63,7 @@ public class Player : MonoBehaviour
         _currentLives--;
         if (_currentLives < 1)
         {
-            _spawnManager.GameOver(true);
+            _gameManager.GameOver(true);
             Destroy(gameObject);
         }
     }

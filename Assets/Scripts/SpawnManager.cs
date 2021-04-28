@@ -15,7 +15,7 @@ public class SpawnManager : MonoBehaviour
 
     IEnumerator SpawnEnemyRoutine()
     {
-        while (!IsGameOver())
+        while (!GameManager.Instance.IsGameOver())
         {
             Vector3 spawnPosition = new Vector3(Random.Range(-9f, 9f), 7f, 0);
             GameObject enemy = Instantiate(_enemyPrefab, spawnPosition, Quaternion.identity);
@@ -26,21 +26,11 @@ public class SpawnManager : MonoBehaviour
 
     IEnumerator SpawnPowerUpsRoutine()
     {
-        while (!IsGameOver())
+        while (!GameManager.Instance.IsGameOver())
         {
             Vector3 spawnPosition = new Vector3(Random.Range(-10f, 10f), 7f, 0);
             Instantiate(_tripleShotPrefab, spawnPosition, Quaternion.identity);
             yield return new WaitForSeconds(Random.Range(6f, 11f));
         }
-    }
-
-    public void GameOver(bool gameStatus)
-    {
-        _isGameOver = gameStatus;
-    }
-
-    bool IsGameOver()
-    {
-        return _isGameOver;
     }
 }
