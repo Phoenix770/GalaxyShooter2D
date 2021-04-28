@@ -5,15 +5,24 @@ public class Player : MonoBehaviour
     [SerializeField] float _playerSpeed = 7f;
     [SerializeField] GameObject _laserPrefab;
     [SerializeField] float _fireRate = 0.15f;
+    [SerializeField] int _maximumLives = 3;
+    SpawnManager _spawnManager;
     Transform _laserContainer;
     float _canFire = -1f;
+    int _currentLives;
 
     void Start()
     {
         transform.position = new Vector3(0, -4f, 0);
+        _currentLives = _maximumLives;
+
         _laserContainer = GameObject.Find("LaserContainer").GetComponent<Transform>();
         if (_laserContainer == null)
             Debug.LogError("Laser Container is NULL!");
+
+        _spawnManager = GameObject.Find("SpawnManager").GetComponent<SpawnManager>();
+        if (_spawnManager == null)
+            Debug.LogError("Spawn Manager is NULL!");
     }
 
     void Update()
@@ -39,5 +48,15 @@ public class Player : MonoBehaviour
         _canFire = Time.time + _fireRate;
         GameObject laser = Instantiate(_laserPrefab, transform.position + new Vector3(0, 0.8f, 0), Quaternion.identity);
         laser.transform.SetParent(_laserContainer);
+    }
+
+    public void Damage()
+    {
+        _currentLives--;
+        if (_currentLives < 1)
+        {
+            _spawnManager.GameOver(true);
+            Destroy(gameObject);
+        }
     }
 }
