@@ -148,6 +148,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _speed: 4
   _scoreAmount: 10
+  _spawnParticle: {fileID: 5620905778515527785, guid: 7b336eff24f8daa41bf33ad3300dc199, type: 3}
 --- !u!95 &398023906
 Animator:
   serializedVersion: 3

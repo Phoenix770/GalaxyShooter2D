@@ -6,17 +6,22 @@ public class SpawnManager : MonoBehaviour
     [SerializeField] GameObject _enemyPrefab;
     [SerializeField] GameObject _enemyContainer;
     [SerializeField] GameObject[] _powerUpPrefab;
-    bool _isGameOver = false;
+    [SerializeField] GameObject _spawnParticle;
 
-    IEnumerator SpawnEnemyRoutine()
+    IEnumerator SpawnEnemyRoutine(float delay)
     {
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(delay);
         while (!GameManager.Instance.IsGameOver())
         {
-            Vector3 spawnPosition = new Vector3(Random.Range(-9f, 9f), 7f, 0);
+            Vector3 spawnPosition = new Vector3(Random.Range(-9f, 9f), Random.Range(4f, 5.5f), 0);
             GameObject enemy = Instantiate(_enemyPrefab, spawnPosition, Quaternion.identity);
+            GameObject particle = Instantiate(_spawnParticle, spawnPosition, Quaternion.identity);
+            enemy.gameObject.SetActive(false);
             enemy.transform.SetParent(_enemyContainer.transform);
-            yield return new WaitForSeconds(3f);
+            yield return new WaitForSeconds(1.8f);
+            enemy.gameObject.SetActive(true);
+            yield return new WaitForSeconds(5f);
+            Destroy(particle);
         }
     }
 
@@ -34,7 +39,11 @@ public class SpawnManager : MonoBehaviour
 
     public void StartSpawning()
     {
-        StartCoroutine(SpawnEnemyRoutine());
+        StartCoroutine(SpawnEnemyRoutine(1f));
+        StartCoroutine(SpawnEnemyRoutine(1.7f));
+        StartCoroutine(SpawnEnemyRoutine(2.6f));
+        StartCoroutine(SpawnEnemyRoutine(3.1f));
+        StartCoroutine(SpawnEnemyRoutine(3.7f));
         StartCoroutine(SpawnPowerUpsRoutine());
     }
 }

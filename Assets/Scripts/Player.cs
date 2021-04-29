@@ -154,6 +154,8 @@ public class Player : MonoBehaviour
         _uiManager.UpdateLives(_currentLives = 0);
         Instantiate(_explosionPrefab, transform.position, Quaternion.identity);
         _playerSpeed = 0;
-        Destroy(gameObject, 0.25f);
+        GetComponent<BoxCollider2D>().enabled = false;
+        transform.position = new Vector3(-100f, -100f, -100f);
+        Destroy(gameObject, 4.25f);
     }
 }
