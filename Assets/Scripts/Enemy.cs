@@ -6,10 +6,14 @@ public class Enemy : MonoBehaviour
     [SerializeField] float _speed = 4f;
     [SerializeField] int _scoreAmount = 10;
     [SerializeField] GameObject _spawnParticle;
+    [SerializeField] GameObject _enemyLaserPrefab;
     Player _player;
     Animator _anim;
     AudioSource _audioSource;
     bool _isBeingRelocated;
+    float _fireRate = 3f;
+    float _canFire = -1f;
+    bool _isDead = false;
 
     private void Start()
     {
@@ -27,6 +31,18 @@ public class Enemy : MonoBehaviour
     }
 
     void Update()
+    {
+        CalculateMovement();
+
+        if (!GameManager.Instance.IsGameOver() && !_isDead && Time.time > _canFire)
+        {
+            _fireRate = Random.Range(3f, 7f);
+            _canFire = Time.time + _fireRate;
+            EnemyShoot();
+        }
+    }
+
+    private void CalculateMovement()
     {
         transform.Translate(Vector3.down * _speed * Time.deltaTime);
 
@@ -74,6 +90,17 @@ public class Enemy : MonoBehaviour
         _speed = 0;
         _player.IncreaseScore(_scoreAmount);
         _audioSource.Play();
+        _isDead = true;
         Destroy(gameObject, 2.5f);
+    }
+
+    void EnemyShoot()
+    {
+        GameObject enemyLaser = Instantiate(_enemyLaserPrefab, transform.position, Quaternion.identity);
+        Laser[] lasers = enemyLaser.GetComponentsInChildren<Laser>();
+        foreach (var laser in lasers)
+        {
+            laser.AssignEnemyLaser();
+        }
     }
 }
