@@ -25,6 +25,7 @@ public class Player : MonoBehaviour
     int _score = 0;
     UIManager _uiManager;
     AudioSource _audioSource;
+    bool _thrustersActivated = false;
 
     void Start()
     {
@@ -72,6 +73,11 @@ public class Player : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space) && Time.time > _canFire)
         {
             Fire();
+        }
+
+        if (Input.GetKeyDown(KeyCode.LeftShift) && !_thrustersActivated)
+        {
+            StartCoroutine(ActivateThrustersRoutine());
         }
     }
 
@@ -157,5 +163,23 @@ public class Player : MonoBehaviour
         GetComponent<BoxCollider2D>().enabled = false;
         transform.position = new Vector3(-100f, -100f, -100f);
         Destroy(gameObject, 4.25f);
+    }
+
+    IEnumerator ActivateThrustersRoutine()
+    {
+        Transform thrusters = gameObject.transform.GetChild(1);
+        _thrustersActivated = true;
+        _playerSpeed *= 2f;
+        while (Input.GetKey(KeyCode.LeftShift))
+        {
+            thrusters.localScale = new Vector3(1.5f, 1.5f, 1f);
+            thrusters.position = new Vector3(transform.position.x, transform.position.y - 2f, 0f);
+            yield return new WaitForSeconds(0.01f);
+        }
+        thrusters.localScale = new Vector3(1f, 1f, 1f);
+        thrusters.position = new Vector3(transform.position.x, transform.position.y - 1.6f, 0f);
+        _thrustersActivated = false;
+        yield return new WaitForSeconds(0.25f);
+        _playerSpeed /= 2f;
     }
 }

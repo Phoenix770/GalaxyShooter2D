@@ -40,10 +40,10 @@ public class SpawnManager : MonoBehaviour
     public void StartSpawning()
     {
         StartCoroutine(SpawnEnemyRoutine(1f));
-        StartCoroutine(SpawnEnemyRoutine(1.7f));
-        StartCoroutine(SpawnEnemyRoutine(2.6f));
+        StartCoroutine(SpawnEnemyRoutine(2.2f));
         StartCoroutine(SpawnEnemyRoutine(3.1f));
-        StartCoroutine(SpawnEnemyRoutine(3.7f));
+        StartCoroutine(SpawnEnemyRoutine(4.3f));
+        StartCoroutine(SpawnEnemyRoutine(5.6f));
         StartCoroutine(SpawnPowerUpsRoutine());
     }
 }
