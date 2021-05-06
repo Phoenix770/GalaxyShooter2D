@@ -26,10 +26,15 @@ public class Player : MonoBehaviour
     int _score = 0;
     UIManager _uiManager;
     AudioSource _audioSource;
+
     bool _thrustersActivated = false;
     int _thrusterValue;
     int _maxThrusterValue = 250;
     bool _overheated = false;
+    CanvasRenderer _thrusterRenderer;
+    Transform _thrusters;
+    Color _originalColor;
+
 
     void Start()
     {
@@ -66,6 +71,12 @@ public class Player : MonoBehaviour
             Debug.LogError("Thruster HUD is NULL!");
         _thrusterBar.SetValue(_maxThrusterValue);
         _thrusterValue = _maxThrusterValue;
+
+        _thrusterRenderer = _thrusterBar.gameObject.transform.GetChild(0).GetComponent<CanvasRenderer>();
+        _thrusters = gameObject.transform.GetChild(1); //Thruster
+        _originalColor = _thrusterRenderer.GetColor();
+
+
     }
 
     void Update()
@@ -177,18 +188,17 @@ public class Player : MonoBehaviour
 
     IEnumerator ActivateThrustersRoutine()
     {
-        Transform thrusters = gameObject.transform.GetChild(1); //Thruster
         _thrustersActivated = true;
         _playerSpeed *= 2f;
         while (Input.GetKey(KeyCode.LeftShift) && _thrusterValue > 0)
         {
-            thrusters.localScale = new Vector3(1.5f, 1.5f, 1f);
-            thrusters.position = new Vector3(transform.position.x, transform.position.y - 2f, 0f);
+            _thrusters.localScale = new Vector3(1.5f, 1.5f, 1f);
+            _thrusters.position = new Vector3(transform.position.x, transform.position.y - 2f, 0f);
             yield return new WaitForSeconds(0.01f);
             _thrusterBar.SetValue(--_thrusterValue);
         }
-        thrusters.localScale = new Vector3(1f, 1f, 1f);
-        thrusters.position = new Vector3(transform.position.x, transform.position.y - 1.6f, 0f);
+        _thrusters.localScale = new Vector3(1f, 1f, 1f);
+        _thrusters.position = new Vector3(transform.position.x, transform.position.y - 1.6f, 0f);
         _thrustersActivated = false;
         StartCoroutine(ThrusterFillUpRoutine());
         yield return new WaitForSeconds(0.25f);
@@ -197,8 +207,6 @@ public class Player : MonoBehaviour
 
     IEnumerator ThrusterFillUpRoutine()
     {
-        CanvasRenderer _thrusterRenderer = _thrusterBar.gameObject.transform.GetChild(0).GetComponent<CanvasRenderer>();
-        Color _originalColor = _thrusterRenderer.GetColor();
         if (_thrusterValue == 0)
         {
             _thrusterBar.Overheated(_overheated = true);
@@ -207,13 +215,12 @@ public class Player : MonoBehaviour
 
         if (_overheated)
         {
-
             while (_thrusterValue != _maxThrusterValue)
             {
                 _thrusterBar.SetValue(++_thrusterValue);
                 yield return new WaitForSeconds(0.01f);
             }
-            _thrusterRenderer.SetColor(new Color(1, 1, 1, 1));
+            _thrusterRenderer.SetColor(_originalColor);
             _thrusterBar.Overheated(_overheated = false);
         }
         else
