@@ -18,11 +18,10 @@ public class Player : MonoBehaviour
 
     GameManager _gameManager;
     Transform _laserContainer;
-    GameObject _shields;
+    ShieldBehavior _shields;
     float _canFire = -1f;
     int _currentLives;
     bool _isTripleShotActive;
-    bool _isShieldsActive;
     int _score = 0;
     UIManager _uiManager;
     AudioSource _audioSource;
@@ -51,10 +50,10 @@ public class Player : MonoBehaviour
         if (_gameManager == null)
             Debug.LogError("Game Manager is NULL!");
 
-        _shields = GameObject.Find("ShieldsEffect");
+        _shields = gameObject.GetComponentInChildren<ShieldBehavior>();
         if (_shields == null)
             Debug.LogError("Shields not found!");
-        _shields.SetActive(false);
+        _shields.gameObject.SetActive(false);
 
         _uiManager = GameObject.Find("Canvas").GetComponent<UIManager>();
         if (_uiManager == null)
@@ -75,8 +74,6 @@ public class Player : MonoBehaviour
         _thrusterRenderer = _thrusterBar.gameObject.transform.GetChild(0).GetComponent<CanvasRenderer>();
         _thrusters = gameObject.transform.GetChild(1); //Thruster
         _originalColor = _thrusterRenderer.GetColor();
-
-
     }
 
     void Update()
@@ -117,11 +114,9 @@ public class Player : MonoBehaviour
 
     public void Damage()
     {
-        if (_isShieldsActive)
+        if (_shields.AreShieldsActive())
         {
-            _isShieldsActive = false;
-            _shields.SetActive(false);
-
+            _shields.DamageShields();
             return;
         }
 
@@ -165,8 +160,7 @@ public class Player : MonoBehaviour
 
     public void ActivateShields()
     {
-        _isShieldsActive = true;
-        _shields.SetActive(true);
+        _shields.ActivateShields();
     }
 
     public void IncreaseScore(int scoreAmount)
@@ -190,10 +184,10 @@ public class Player : MonoBehaviour
     {
         _thrustersActivated = true;
         _playerSpeed *= 2f;
+        _thrusters.localScale = new Vector3(1.5f, 1.5f, 1f);
+        _thrusters.position = new Vector3(transform.position.x, transform.position.y - 2f, 0f);
         while (Input.GetKey(KeyCode.LeftShift) && _thrusterValue > 0)
         {
-            _thrusters.localScale = new Vector3(1.5f, 1.5f, 1f);
-            _thrusters.position = new Vector3(transform.position.x, transform.position.y - 2f, 0f);
             yield return new WaitForSeconds(0.01f);
             _thrusterBar.SetValue(--_thrusterValue);
         }
