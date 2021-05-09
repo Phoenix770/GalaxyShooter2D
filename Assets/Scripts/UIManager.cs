@@ -9,12 +9,14 @@ public class UIManager : MonoBehaviour
     [SerializeField] Sprite[] _liveSprites;
     [SerializeField] Text _gameOverText;
     [SerializeField] Text _restartGameText;
+    [SerializeField] Text _ammoText;
 
     void Start()
     {
         _scoreText.text = "Score: " + 0;
         _gameOverText.gameObject.SetActive(false);
         _restartGameText.gameObject.SetActive(false);
+        _ammoText.text = "Ammo: " + 15 + "/" + 15;
     }
 
     public void UpdateScore(int score)
@@ -49,5 +51,10 @@ public class UIManager : MonoBehaviour
             _gameOverText.text = "";
             yield return new WaitForSeconds(0.5f);
         }
+    }
+
+    public void UpdateAmmo(int currAmmo, int maxAmmo)
+    {
+        _ammoText.text = "Ammo: " + currAmmo + " / " + maxAmmo;
     }
 }

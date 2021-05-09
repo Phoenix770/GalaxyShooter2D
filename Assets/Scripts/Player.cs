@@ -123,8 +123,8 @@ public class Player : MonoBehaviour
         else
             laser = Instantiate(_laserPrefab, transform.position + new Vector3(0, 0.8f, 0), Quaternion.identity);
         _currentAmmo--;
+        _uiManager.UpdateAmmo(_currentAmmo, _maximumAmmo);
         laser.transform.SetParent(_laserContainer);
-
         _audioSource.Play();
     }
 
