@@ -246,4 +246,21 @@ public class Player : MonoBehaviour
     {
         _uiManager.UpdateAmmo(_currentAmmo = _maximumAmmo, _maximumAmmo);
     }
+
+    public void RestoreHealth()
+    {
+        switch (++_currentLives)
+        {
+            case 4:
+                _currentLives--;
+                break;
+            case 3:
+                _rightEngine.gameObject.SetActive(false);
+                break;
+            case 2:
+                _leftEngine.gameObject.SetActive(false);
+                break;
+        }
+        _uiManager.UpdateLives(_currentLives);
+    }
 }
