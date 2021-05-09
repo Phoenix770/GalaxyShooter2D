@@ -14,7 +14,9 @@ public class Player : MonoBehaviour
     [SerializeField] GameObject _leftEngine;
     [SerializeField] GameObject _explosionPrefab;
     [SerializeField] AudioClip _laserSoundClip;
+    [SerializeField] AudioClip _noAmmoClip;
     [SerializeField] Thrusters _thrusterBar;
+    [SerializeField] int _maximumAmmo = 15;
 
     GameManager _gameManager;
     Transform _laserContainer;
@@ -25,6 +27,7 @@ public class Player : MonoBehaviour
     int _score = 0;
     UIManager _uiManager;
     AudioSource _audioSource;
+    AudioSource _noAmmo;
 
     bool _thrustersActivated = false;
     int _thrusterValue;
@@ -33,6 +36,8 @@ public class Player : MonoBehaviour
     CanvasRenderer _thrusterRenderer;
     Transform _thrusters;
     Color _originalColor;
+
+    int _currentAmmo;
 
 
     void Start()
@@ -65,6 +70,10 @@ public class Player : MonoBehaviour
         else
             _audioSource.clip = _laserSoundClip;
 
+        _noAmmo = GameObject.Find("NoAmmo").GetComponent<AudioSource>();
+        if (_noAmmo == null)
+            Debug.LogError("AudioSource NoAmmo is NULL!");
+
         _thrusterBar = GameObject.Find("Thruster_HUD").GetComponent<Thrusters>();
         if (_thrusterBar == null)
             Debug.LogError("Thruster HUD is NULL!");
@@ -74,6 +83,8 @@ public class Player : MonoBehaviour
         _thrusterRenderer = _thrusterBar.gameObject.transform.GetChild(0).GetComponent<CanvasRenderer>();
         _thrusters = gameObject.transform.GetChild(1); //Thruster
         _originalColor = _thrusterRenderer.GetColor();
+
+        _currentAmmo = _maximumAmmo;
     }
 
     void Update()
@@ -90,7 +101,11 @@ public class Player : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Space) && Time.time > _canFire)
         {
-            Fire();
+            Debug.Log(_currentAmmo);
+            if (_currentAmmo == 0)
+                _noAmmo.Play();
+            else
+                Fire();
         }
 
         if (!GameManager.Instance.IsGameOver() && Input.GetKeyDown(KeyCode.LeftShift) && !_thrustersActivated && !_overheated)
@@ -107,6 +122,7 @@ public class Player : MonoBehaviour
             laser = Instantiate(_tripleShotPrefab, transform.position, Quaternion.identity);
         else
             laser = Instantiate(_laserPrefab, transform.position + new Vector3(0, 0.8f, 0), Quaternion.identity);
+        _currentAmmo--;
         laser.transform.SetParent(_laserContainer);
 
         _audioSource.Play();
