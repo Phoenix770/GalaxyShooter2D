@@ -16,7 +16,7 @@ public class UIManager : MonoBehaviour
         _scoreText.text = "Score: " + 0;
         _gameOverText.gameObject.SetActive(false);
         _restartGameText.gameObject.SetActive(false);
-        _ammoText.text = "Ammo: " + 15 + "/" + 15;
+        _ammoText.text = "Ammo: " + 15 + " / " + 15;
     }
 
     public void UpdateScore(int score)

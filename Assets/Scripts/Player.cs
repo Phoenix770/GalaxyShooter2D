@@ -101,7 +101,6 @@ public class Player : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Space) && Time.time > _canFire)
         {
-            Debug.Log(_currentAmmo);
             if (_currentAmmo == 0)
                 _noAmmo.Play();
             else
@@ -241,5 +240,10 @@ public class Player : MonoBehaviour
                 yield return new WaitForSeconds(0.01f);
             }
         }
+    }
+
+    public void FillAmunition()
+    {
+        _uiManager.UpdateAmmo(_currentAmmo = _maximumAmmo, _maximumAmmo);
     }
 }
