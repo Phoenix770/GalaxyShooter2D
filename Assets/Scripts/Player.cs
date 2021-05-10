@@ -17,6 +17,8 @@ public class Player : MonoBehaviour
     [SerializeField] AudioClip _noAmmoClip;
     [SerializeField] Thrusters _thrusterBar;
     [SerializeField] int _maximumAmmo = 15;
+    [SerializeField] float _shakeDuration = 0.3f;
+    [SerializeField] float _shakeMagnitude = 0.4f;
 
     GameManager _gameManager;
     Transform _laserContainer;
@@ -28,6 +30,7 @@ public class Player : MonoBehaviour
     UIManager _uiManager;
     AudioSource _audioSource;
     AudioSource _noAmmo;
+    CameraShake _cameraShake;
 
     bool _thrustersActivated = false;
     int _thrusterValue;
@@ -85,6 +88,10 @@ public class Player : MonoBehaviour
         _originalColor = _thrusterRenderer.GetColor();
 
         _currentAmmo = _maximumAmmo;
+
+        _cameraShake = GameObject.Find("CameraShake").GetComponent<CameraShake>();
+        if (_cameraShake == null)
+            Debug.LogError("CameraShake is NULL!");
     }
 
     void Update()
@@ -136,6 +143,7 @@ public class Player : MonoBehaviour
         }
 
         _currentLives--;
+        StartCoroutine(_cameraShake.Shake(_shakeDuration, _shakeMagnitude));
         _uiManager.UpdateLives(_currentLives);
 
         if (_currentLives == 2)
@@ -186,6 +194,7 @@ public class Player : MonoBehaviour
 
     public void DestroyPlayer()
     {
+        StartCoroutine(_cameraShake.Shake(_shakeDuration, _shakeMagnitude));
         _gameManager.GameOver(true);
         _uiManager.UpdateLives(_currentLives = 0);
         Instantiate(_explosionPrefab, transform.position, Quaternion.identity);
