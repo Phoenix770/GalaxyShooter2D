@@ -1816,10 +1816,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _playerSpeed: 9
   _laserPrefab: {fileID: 3776536348459323621, guid: 95c70e12cb1a3a14d91a96f89fb2fd45, type: 3}
-  _fireRate: 0.15
-  _maximumLives: 3
   _tripleShotDuration: 5
   _tripleShotPrefab: {fileID: 2952711624318156446, guid: 1db24bbb17d6a46419e7f9588ab45e50, type: 3}
+  _fireRate: 0.15
+  _maximumAmmo: 15
   _speedPowerUpDuration: 7
   _rightEngine: {fileID: 787278210}
   _leftEngine: {fileID: 539715041}
@@ -1827,9 +1827,9 @@ MonoBehaviour:
   _laserSoundClip: {fileID: 8300000, guid: 75676f361bdfeaf41a46623e95df3dbc, type: 3}
   _noAmmoClip: {fileID: 0}
   _thrusterBar: {fileID: 947735564}
-  _maximumAmmo: 15
   _shakeDuration: 0.3
   _shakeMagnitude: 0.4
+  _maximumLives: 3
 --- !u!82 &1437026154
 AudioSource:
   m_ObjectHideFlags: 0

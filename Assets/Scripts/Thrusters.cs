@@ -3,8 +3,9 @@ using UnityEngine.UI;
 
 public class Thrusters : MonoBehaviour
 {
-    Slider _thrusterBar;
     [SerializeField] Text _overheatedText;
+
+    Slider _thrusterBar;
 
     private void Start()
     {

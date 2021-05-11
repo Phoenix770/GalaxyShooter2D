@@ -3,7 +3,10 @@ using UnityEngine;
 public class Laser : MonoBehaviour
 {
     [SerializeField] float _speed = 9f;
+
     bool _isEnemyLaser = false;
+    float _verticalLimitNegative = -6f;
+    float _verticalLimitPositive = 7f;
 
     void Update()
     {
@@ -17,7 +20,7 @@ public class Laser : MonoBehaviour
     {
         transform.Translate(Vector3.up * _speed * Time.deltaTime);
 
-        if (transform.position.y > 7f)
+        if (transform.position.y > _verticalLimitPositive)
         {
             if (transform.parent.name == "TripleLaserShot(Clone)")
                 Destroy(transform.parent.gameObject);
@@ -30,7 +33,7 @@ public class Laser : MonoBehaviour
     {
         transform.Translate(Vector3.down * _speed * Time.deltaTime);
 
-        if (transform.position.y < -6f)
+        if (transform.position.y < _verticalLimitNegative)
         {
             if (transform.parent.name == "TripleLaserShot(Clone)")
                 Destroy(transform.parent.gameObject);

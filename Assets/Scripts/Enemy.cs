@@ -1,21 +1,54 @@
 using System.Collections;
 using UnityEngine;
 
+[RequireComponent(typeof(Collider2D))]
+[RequireComponent(typeof(Rigidbody2D))]
+[RequireComponent(typeof(AudioSource))]
+
 public class Enemy : MonoBehaviour
 {
+    #region Variables
+
+    [Header("Movement")]
     [SerializeField] float _speed = 4f;
+    bool _isDead = false;
+
+    [Header("Score")]
     [SerializeField] int _scoreAmount = 10;
+
+    [Header("Spawning & Relocation")]
     [SerializeField] GameObject _spawnParticle;
+    bool _isBeingRelocated;
+
+    [Header("Shooting")]
     [SerializeField] GameObject _enemyLaserPrefab;
+    float _fireRate = 3f;
+    float _canFire = -1f;
+
+    [Header("Components")]
     Player _player;
     Animator _anim;
     AudioSource _audioSource;
-    bool _isBeingRelocated;
-    float _fireRate = 3f;
-    float _canFire = -1f;
-    bool _isDead = false;
+
+    #endregion
 
     private void Start()
+    {
+        InitializeComponents();
+    }
+    void Update()
+    {
+        CalculateMovement();
+
+        if (!GameManager.Instance.IsGameOver() && !_isDead && Time.time > _canFire)
+        {
+            _fireRate = Random.Range(3f, 7f);
+            _canFire = Time.time + _fireRate;
+            EnemyShoot();
+        }
+    }
+
+    void InitializeComponents()
     {
         _anim = GetComponent<Animator>();
         if (_anim == null)
@@ -28,18 +61,6 @@ public class Enemy : MonoBehaviour
         _audioSource = GetComponent<AudioSource>();
         if (_audioSource == null)
             Debug.LogError("AudioSource on Enemy is NULL!");
-    }
-
-    void Update()
-    {
-        CalculateMovement();
-
-        if (!GameManager.Instance.IsGameOver() && !_isDead && Time.time > _canFire)
-        {
-            _fireRate = Random.Range(3f, 7f);
-            _canFire = Time.time + _fireRate;
-            EnemyShoot();
-        }
     }
 
     private void CalculateMovement()

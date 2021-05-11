@@ -1,55 +1,118 @@
 using System.Collections;
 using UnityEngine;
 
+[RequireComponent(typeof(Collider2D))]
+[RequireComponent(typeof(Rigidbody2D))]
+[RequireComponent(typeof(AudioSource))]
+
 public class Player : MonoBehaviour
 {
+    #region Variables
+
+    [Header("Movement")]
     [SerializeField] float _playerSpeed = 7f;
+    bool _thrustersActivated = false;
+    int _thrusterValue;
+    int _maxThrusterValue = 250;
+    bool _overheated = false;
+    [Tooltip("Original Color of the Thruster Bar")] Color _originalColor;
+
+    [Header("Shooting")]
     [SerializeField] GameObject _laserPrefab;
-    [SerializeField] float _fireRate = 0.15f;
-    [SerializeField] int _maximumLives = 3;
     [SerializeField] float _tripleShotDuration = 5f;
     [SerializeField] GameObject _tripleShotPrefab;
+    [SerializeField] float _fireRate = 0.15f;
+
+    [SerializeField] int _maximumAmmo = 15;
+    float _canFire = -1f;
+    bool _isTripleShotActive;
+    int _currentAmmo;
+
+    [Header("PowerUps")]
     [SerializeField] float _speedPowerUpDuration = 7f;
+
+    [Header("GameObjects")]
     [SerializeField] GameObject _rightEngine;
     [SerializeField] GameObject _leftEngine;
     [SerializeField] GameObject _explosionPrefab;
     [SerializeField] AudioClip _laserSoundClip;
     [SerializeField] AudioClip _noAmmoClip;
     [SerializeField] Thrusters _thrusterBar;
-    [SerializeField] int _maximumAmmo = 15;
+
+    [Header("CameraShake")]
     [SerializeField] float _shakeDuration = 0.3f;
     [SerializeField] float _shakeMagnitude = 0.4f;
 
+    [Header("Lives & Score")]
+    [SerializeField] int _maximumLives = 3;
+    int _currentLives;
+    int _score = 0;
+
+    [Header("Components")]
     GameManager _gameManager;
     Transform _laserContainer;
     ShieldBehavior _shields;
-    float _canFire = -1f;
-    int _currentLives;
-    bool _isTripleShotActive;
-    int _score = 0;
     UIManager _uiManager;
     AudioSource _audioSource;
     AudioSource _noAmmo;
     CameraShake _cameraShake;
-
-    bool _thrustersActivated = false;
-    int _thrusterValue;
-    int _maxThrusterValue = 250;
-    bool _overheated = false;
     CanvasRenderer _thrusterRenderer;
     Transform _thrusters;
-    Color _originalColor;
 
-    int _currentAmmo;
-
+    #endregion
 
     void Start()
     {
-        transform.position = new Vector3(0, -4f, 0);
-        _currentLives = _maximumLives;
-        _rightEngine.gameObject.SetActive(false);
-        _leftEngine.gameObject.SetActive(false);
+        InitializeComponents();
 
+        InitializeValues();
+
+        transform.position = new Vector3(0, -4f, 0);
+    }
+
+    void Update()
+    {
+        PlayerMovement();
+
+        FireWeapon();
+
+        ActivateThrusters();
+    }
+
+    void PlayerMovement()
+    {
+        float horizontal = Input.GetAxis("Horizontal");
+        float vertical = Input.GetAxis("Vertical");
+        Vector3 direction = new Vector3(horizontal, vertical, 0);
+
+        transform.Translate(direction * _playerSpeed * Time.deltaTime);
+        transform.position = new Vector3(transform.position.x, Mathf.Clamp(transform.position.y, -4.8f, 4.8f), 0f); ;
+
+        if (transform.position.x > 11f || transform.position.x < -11f)
+            transform.position = new Vector3(-transform.position.x, transform.position.y, 0);
+    }
+
+    void FireWeapon()
+    {
+        if (Input.GetKeyDown(KeyCode.Space) && Time.time > _canFire)
+        {
+            if (_currentAmmo == 0)
+                _noAmmo.Play();
+            else
+                Fire();
+        }
+    }
+
+    void ActivateThrusters()
+    {
+        if (!GameManager.Instance.IsGameOver() && Input.GetKeyDown(KeyCode.LeftShift) && !_thrustersActivated && !_overheated)
+        {
+            StartCoroutine(ActivateThrustersRoutine());
+        }
+    }
+
+    void InitializeComponents()
+    {
         _laserContainer = GameObject.Find("LaserContainer").GetComponent<Transform>();
         if (_laserContainer == null)
             Debug.LogError("Laser Container is NULL!");
@@ -84,40 +147,22 @@ public class Player : MonoBehaviour
         _thrusterValue = _maxThrusterValue;
 
         _thrusterRenderer = _thrusterBar.gameObject.transform.GetChild(0).GetComponent<CanvasRenderer>();
+        if (_thrusterRenderer == null)
+            Debug.LogError("Thruster Renderer is NULL!");
         _thrusters = gameObject.transform.GetChild(1); //Thruster
         _originalColor = _thrusterRenderer.GetColor();
-
-        _currentAmmo = _maximumAmmo;
 
         _cameraShake = GameObject.Find("CameraShake").GetComponent<CameraShake>();
         if (_cameraShake == null)
             Debug.LogError("CameraShake is NULL!");
     }
 
-    void Update()
+    void InitializeValues()
     {
-        float horizontal = Input.GetAxis("Horizontal");
-        float vertical = Input.GetAxis("Vertical");
-        Vector3 direction = new Vector3(horizontal, vertical, 0);
-
-        transform.Translate(direction * _playerSpeed * Time.deltaTime);
-        transform.position = new Vector3(transform.position.x, Mathf.Clamp(transform.position.y, -4.8f, 4.8f), 0f); ;
-
-        if (transform.position.x > 11f || transform.position.x < -11f)
-            transform.position = new Vector3(-transform.position.x, transform.position.y, 0);
-
-        if (Input.GetKeyDown(KeyCode.Space) && Time.time > _canFire)
-        {
-            if (_currentAmmo == 0)
-                _noAmmo.Play();
-            else
-                Fire();
-        }
-
-        if (!GameManager.Instance.IsGameOver() && Input.GetKeyDown(KeyCode.LeftShift) && !_thrustersActivated && !_overheated)
-        {
-            StartCoroutine(ActivateThrustersRoutine());
-        }
+        _currentLives = _maximumLives;
+        _rightEngine.gameObject.SetActive(false);
+        _leftEngine.gameObject.SetActive(false);
+        _currentAmmo = _maximumAmmo;
     }
 
     void Fire()
@@ -157,6 +202,7 @@ public class Player : MonoBehaviour
         }
     }
 
+    #region PowerUps
     public void ActivateTripleShot()
     {
         StartCoroutine(TripleShotPowerDownRoutine());
@@ -186,6 +232,29 @@ public class Player : MonoBehaviour
         _shields.ActivateShields();
     }
 
+    public void FillAmunition()
+    {
+        _uiManager.UpdateAmmo(_currentAmmo = _maximumAmmo, _maximumAmmo);
+    }
+
+    public void RestoreHealth()
+    {
+        switch (++_currentLives)
+        {
+            case 4:
+                _currentLives--;
+                break;
+            case 3:
+                _rightEngine.gameObject.SetActive(false);
+                break;
+            case 2:
+                _leftEngine.gameObject.SetActive(false);
+                break;
+        }
+        _uiManager.UpdateLives(_currentLives);
+    }
+    #endregion
+
     public void IncreaseScore(int scoreAmount)
     {
         _score += scoreAmount;
@@ -203,6 +272,8 @@ public class Player : MonoBehaviour
         transform.position = new Vector3(-100f, -100f, -100f);
         Destroy(gameObject, 4.25f);
     }
+
+    #region Thrusters
 
     IEnumerator ActivateThrustersRoutine()
     {
@@ -250,26 +321,5 @@ public class Player : MonoBehaviour
             }
         }
     }
-
-    public void FillAmunition()
-    {
-        _uiManager.UpdateAmmo(_currentAmmo = _maximumAmmo, _maximumAmmo);
-    }
-
-    public void RestoreHealth()
-    {
-        switch (++_currentLives)
-        {
-            case 4:
-                _currentLives--;
-                break;
-            case 3:
-                _rightEngine.gameObject.SetActive(false);
-                break;
-            case 2:
-                _leftEngine.gameObject.SetActive(false);
-                break;
-        }
-        _uiManager.UpdateLives(_currentLives);
-    }
+    #endregion
 }
