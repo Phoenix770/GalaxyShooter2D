@@ -30,12 +30,18 @@ public class Enemy : MonoBehaviour
     Animator _anim;
     AudioSource _audioSource;
 
+    [Header("Enemy Shields")]
+    [SerializeField] GameObject _shields;
+    bool _isShieldActive = false;
+
     #endregion
 
     private void Start()
     {
         InitializeComponents();
+        SpawnWithShield();
     }
+
     void Update()
     {
         CalculateMovement();
@@ -61,6 +67,10 @@ public class Enemy : MonoBehaviour
         _audioSource = GetComponent<AudioSource>();
         if (_audioSource == null)
             Debug.LogError("AudioSource on Enemy is NULL!");
+
+        if (_shields == null)
+            Debug.LogError("Shields not found!");
+        _shields.gameObject.SetActive(false);
     }
 
     private void CalculateMovement()
@@ -78,12 +88,26 @@ public class Enemy : MonoBehaviour
         if (collision.tag == "Laser")
         {
             Destroy(collision.gameObject);
+            if (_isShieldActive)
+            {
+                DeactivateShields();
+                return;
+            }
             DestroyEnemy();
         }
         else if (collision.tag == "Player")
         {
             Player player = collision.GetComponent<Player>();
             if (player == null)
+                return;
+
+            if (_isShieldActive)
+            {
+                DeactivateShields();
+                player.Damage();
+            }
+
+            if (GameManager.Instance.IsGameOver())
                 return;
 
             player.Damage();
@@ -123,5 +147,16 @@ public class Enemy : MonoBehaviour
         {
             laser.AssignEnemyLaser();
         }
+    }
+
+    void SpawnWithShield()
+    {
+        if (Random.Range(0, 4) == 3)
+            _shields.gameObject.SetActive(_isShieldActive = true);
+    }
+
+    void DeactivateShields()
+    {
+        _shields.gameObject.SetActive(_isShieldActive = false);
     }
 }
