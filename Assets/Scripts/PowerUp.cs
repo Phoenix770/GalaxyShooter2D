@@ -39,6 +39,9 @@ public class PowerUp : MonoBehaviour
                 case 4:
                     _player.RestoreHealth();
                     break;
+                case 5:
+                    _player.DebuffPlayer();
+                    break;
             }
             AudioSource.PlayClipAtPoint(_powerUpClip, transform.position);
 

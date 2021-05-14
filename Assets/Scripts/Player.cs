@@ -30,6 +30,9 @@ public class Player : MonoBehaviour
 
     [Header("PowerUps")]
     [SerializeField] float _speedPowerUpDuration = 7f;
+    [SerializeField] float _fireRateDebuff = 1.5f;
+    [SerializeField] float _debuffDuration = 7f;
+    bool _isDebuffActive = false;
 
     [Header("GameObjects")]
     [SerializeField] GameObject _rightEngine;
@@ -84,6 +87,8 @@ public class Player : MonoBehaviour
         float horizontal = Input.GetAxis("Horizontal");
         float vertical = Input.GetAxis("Vertical");
         Vector3 direction = new Vector3(horizontal, vertical, 0);
+        if (_isDebuffActive)
+            direction = -direction;
 
         transform.Translate(direction * _playerSpeed * Time.deltaTime);
         transform.position = new Vector3(transform.position.x, Mathf.Clamp(transform.position.y, -4.8f, 4.8f), 0f); ;
@@ -168,6 +173,9 @@ public class Player : MonoBehaviour
     void Fire()
     {
         _canFire = Time.time + _fireRate;
+        if (_isDebuffActive)
+            _canFire += _fireRateDebuff;
+
         GameObject laser;
         if (_isTripleShotActive)
             laser = Instantiate(_tripleShotPrefab, transform.position, Quaternion.identity);
@@ -252,6 +260,18 @@ public class Player : MonoBehaviour
                 break;
         }
         _uiManager.UpdateLives(_currentLives);
+    }
+
+    public void DebuffPlayer()
+    {
+        StartCoroutine(PlayerDebuffed());
+    }
+
+    IEnumerator PlayerDebuffed()
+    {
+        _isDebuffActive = true;
+        yield return new WaitForSeconds(_debuffDuration);
+        _isDebuffActive = false;
     }
     #endregion
 
