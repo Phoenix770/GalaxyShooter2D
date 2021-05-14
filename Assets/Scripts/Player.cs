@@ -4,6 +4,7 @@ using UnityEngine;
 [RequireComponent(typeof(Collider2D))]
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(AudioSource))]
+[RequireComponent(typeof(Animator))]
 
 public class Player : MonoBehaviour
 {
@@ -61,6 +62,7 @@ public class Player : MonoBehaviour
     CameraShake _cameraShake;
     CanvasRenderer _thrusterRenderer;
     Transform _thrusters;
+    Animator _animator;
 
     #endregion
 
@@ -84,8 +86,19 @@ public class Player : MonoBehaviour
 
     void PlayerMovement()
     {
-        float horizontal = Input.GetAxis("Horizontal");
         float vertical = Input.GetAxis("Vertical");
+        float horizontal = Input.GetAxis("Horizontal");
+
+        int horizontalInt;
+
+        if (horizontal < 0)
+            horizontalInt = -1;
+        else if (horizontal == 0)
+            horizontalInt = 0;
+        else
+            horizontalInt = 1;
+
+        _animator.SetInteger("horizontal", horizontalInt);
         Vector3 direction = new Vector3(horizontal, vertical, 0);
         if (_isDebuffActive)
             direction = -direction;
@@ -160,6 +173,10 @@ public class Player : MonoBehaviour
         _cameraShake = GameObject.Find("CameraShake").GetComponent<CameraShake>();
         if (_cameraShake == null)
             Debug.LogError("CameraShake is NULL!");
+
+        _animator = gameObject.GetComponent<Animator>();
+        if (_animator == null)
+            Debug.LogError("Animator is NULL!");
     }
 
     void InitializeValues()
